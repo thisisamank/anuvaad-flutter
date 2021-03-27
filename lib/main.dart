@@ -1,8 +1,10 @@
+import 'package:anuvad/constants/file_state.dart';
 import 'package:anuvad/constants/styles.dart';
+import 'package:anuvad/repository/upload_download.dart';
 import 'package:anuvad/widgets/appbar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,9 +16,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: HomePage(),
       theme: ThemeData(
+        fontFamily: 'BrandFont',
         textTheme: TextTheme(
-          headline1: GoogleFonts.montserrat(
+          headline1: TextStyle(
             fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey.shade800,
+          ),
+          bodyText1: TextStyle(
+            fontSize: 14,
             fontWeight: FontWeight.w500,
             color: Colors.grey.shade800,
           ),
@@ -34,6 +42,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  UploadDownloadFile _uploadDownloadFile = new UploadDownloadFile();
+  FileState fileState;
+  @override
+  void initState() {
+    super.initState();
+    fileState = FileState.uploading;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,32 +59,119 @@ class _HomePageState extends State<HomePage> {
           SizedBox(height: 20),
           Center(
               child: Text(
-            'Upload Your Video',
+            fileState == FileState.uploading
+                ? 'Upload Your Video'
+                : fileState == FileState.processsing
+                    ? 'Processing your Video'
+                    : 'Download Your Video',
             style: Theme.of(context).textTheme.headline1,
           )),
           SizedBox(height: 20),
           Container(
-              decoration: BoxDecoration(
-                color: BrandColors.lightBlue,
-              ),
-              width: 250,
-              height: 250,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    child: Center(
-                        child: Image.asset(
-                      'images/folder.png',
-                      width: 70,
-                    )),
-                  ),
-                  SizedBox(height: 8),
-                  Text('Click here to upload')
-                ],
-              ))
+            decoration: BoxDecoration(
+              color: BrandColors.lightBlue,
+            ),
+            width: 250,
+            height: 250,
+            child: fileState == FileState.uploading
+                ? uploadFile(_uploadDownloadFile, context)
+                : downloadFile(_uploadDownloadFile, context),
+          )
         ],
       ),
+    );
+  }
+
+  Widget downloadFile(
+      UploadDownloadFile _uploadDownloadFile, BuildContext context) {
+    return fileState == FileState.processsing
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Processing Time left: '),
+              Countdown(
+                seconds: 180,
+                build: (BuildContext context, double time) =>
+                    Text(time.toInt().toString()),
+                interval: Duration(milliseconds: 100),
+                onFinished: () {
+                  setState(() {
+                    fileState = FileState.downloading;
+                  });
+                },
+              ),
+            ],
+          )
+        : Center(
+            child: Container(
+              height: 30,
+              width: 120,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: MaterialButton(
+                  onPressed: () {},
+                  child: Text(
+                    'Download',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              color: BrandColors.secondaryBlue,
+            ),
+          );
+  }
+
+  Widget uploadFile(
+      UploadDownloadFile _uploadDownloadFile, BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: () async {
+            FilePickerResult filePickerResult =
+                await FilePicker.platform.pickFiles(
+              type: FileType.custom,
+              withData: true,
+              allowedExtensions: ['mp4', 'mkv', '3gp'],
+            );
+            if (filePickerResult != null) {
+              _showMyDialog('Uploading your video...');
+              var fileName = filePickerResult.files.single.name;
+              var file = filePickerResult.files.single.bytes;
+              var currentFileState =
+                  await _uploadDownloadFile.uploadFile(fileName, file);
+              Navigator.of(context).pop();
+              setState(() {
+                fileState = currentFileState;
+              });
+            }
+          },
+          child: Center(
+            child: Image.asset(
+              'images/folder.png',
+              width: 70,
+            ),
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Click here to upload',
+          style: Theme.of(context).textTheme.bodyText1,
+        )
+      ],
+    );
+  }
+
+  Future<void> _showMyDialog(String title) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(title),
+        );
+      },
     );
   }
 }
