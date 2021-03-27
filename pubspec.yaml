@@ -32,6 +32,8 @@ dependencies:
   downloads_path_provider: ^0.1.0
   font_awesome_flutter: ^9.0.0
   timer_count_down: ^2.0.0
+  permission_handler: ^6.1.1
+  toast: ^0.1.5
 
 dev_dependencies:
   flutter_test:

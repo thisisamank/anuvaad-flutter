@@ -19,7 +19,7 @@ class UploadDownloadFile {
     return response.statusCode == 200 ? FileState.processsing : FileState.error;
   }
 
-  downloadFile(String fileName) async {
+  Future<FileState> downloadFile(String fileName) async {
     var fileNameWithoutExtension = fileName.substring(0, fileName.length - 4);
     Response response;
     try {
@@ -41,10 +41,10 @@ class UploadDownloadFile {
       // response.data is List<int> type
       raf.writeFromSync(response.data);
       await raf.close();
-      return 0;
+      return FileState.downloaded;
     } catch (e) {
       print(e);
-      return -1;
+      return FileState.error;
     }
   }
 }

@@ -1,9 +1,12 @@
 import 'package:anuvad/constants/file_state.dart';
 import 'package:anuvad/constants/styles.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:anuvad/repository/upload_download.dart';
 import 'package:anuvad/widgets/appbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
+
 import 'package:timer_count_down/timer_count_down.dart';
 
 void main() {
@@ -44,6 +47,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   UploadDownloadFile _uploadDownloadFile = new UploadDownloadFile();
   FileState fileState;
+  String _fileName;
   @override
   void initState() {
     super.initState();
@@ -91,7 +95,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Text('Processing Time left: '),
               Countdown(
-                seconds: 180,
+                seconds: 150,
                 build: (BuildContext context, double time) =>
                     Text(time.toInt().toString()),
                 interval: Duration(milliseconds: 100),
@@ -104,20 +108,32 @@ class _HomePageState extends State<HomePage> {
             ],
           )
         : Center(
-            child: Container(
-              height: 30,
-              width: 120,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(35),
+              child: Container(
+                height: 35,
+                width: 130,
                 child: MaterialButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    _showMyDialog('Downloading video...');
+                    if (await Permission.storage.request().isGranted) {
+                      var response =
+                          await _uploadDownloadFile.downloadFile(_fileName);
+                      Navigator.of(context).pop();
+                      var message = response == FileState.downloaded
+                          ? 'Your video has been Translated 😎'
+                          : ' Oops! something went wrong 😐';
+                      Toast.show(message, context,
+                          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                    }
+                  },
                   child: Text(
                     'Download',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
+                color: BrandColors.secondaryBlue,
               ),
-              color: BrandColors.secondaryBlue,
             ),
           );
   }
@@ -137,10 +153,10 @@ class _HomePageState extends State<HomePage> {
             );
             if (filePickerResult != null) {
               _showMyDialog('Uploading your video...');
-              var fileName = filePickerResult.files.single.name;
+              _fileName = filePickerResult.files.single.name;
               var file = filePickerResult.files.single.bytes;
               var currentFileState =
-                  await _uploadDownloadFile.uploadFile(fileName, file);
+                  await _uploadDownloadFile.uploadFile(_fileName, file);
               Navigator.of(context).pop();
               setState(() {
                 fileState = currentFileState;
