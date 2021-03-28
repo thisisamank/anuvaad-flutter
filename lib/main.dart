@@ -1,6 +1,7 @@
 import 'package:anuvad/constants/file_state.dart';
 import 'package:anuvad/constants/styles.dart';
 import 'package:bd_progress_bar/bdprogreebar.dart';
+import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:anuvad/repository/upload_download.dart';
 import 'package:anuvad/widgets/appbar.dart';
@@ -128,10 +129,17 @@ class _HomePageState extends State<HomePage> {
         ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Loader(
-                colors: BrandColors.primaryBlue,
-                backColors: BrandColors.secondaryBlue.withOpacity(0.5),
+              Text(
+                'Processing left: ',
+                style: TextStyle(
+                  color: BrandColors.secondaryText,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              // Loader(
+              //   colors: BrandColors.primaryBlue,
+              //   backColors: BrandColors.secondaryBlue.withOpacity(0.5),
+              // ),
               // Loader5(
               //   dotOneColor: BrandColors.primaryBlue,
               //   dotTwoColor: BrandColors.secondaryBlue,
@@ -142,28 +150,31 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Processing Time left: ',
-                    style: TextStyle(
-                      color: BrandColors.secondaryText,
-                      fontWeight: FontWeight.bold,
+                  Container(
+                    width: 200,
+                    child: Countdown(
+                      seconds: 100,
+                      build: (BuildContext context, double time) =>
+                          FAProgressBar(
+                        currentValue: time.toInt(),
+                        maxValue: 100,
+                        displayText: '%',
+                        backgroundColor: BrandColors.primaryBlue,
+                        progressColor: BrandColors.secondaryBlue,
+                      ),
+                      //  => Text(
+                      //   time.toInt().toString(),
+                      //   style: TextStyle(
+                      //       color: BrandColors.secondaryText,
+                      //       fontWeight: FontWeight.bold),
+                      // ),
+                      interval: Duration(milliseconds: 100),
+                      onFinished: () {
+                        setState(() {
+                          fileState = FileState.downloading;
+                        });
+                      },
                     ),
-                  ),
-                  Countdown(
-                    seconds: 150,
-                    //TODO: Use progress bar instead of Text
-                    build: (BuildContext context, double time) => Text(
-                      time.toInt().toString(),
-                      style: TextStyle(
-                          color: BrandColors.secondaryText,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    interval: Duration(milliseconds: 100),
-                    onFinished: () {
-                      setState(() {
-                        fileState = FileState.downloading;
-                      });
-                    },
                   ),
                 ],
               ),

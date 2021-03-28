@@ -37,7 +37,7 @@ dependencies:
   dotted_border: ^1.0.7
   bd_progress_bar: ^0.0.9
   url_launcher: ^6.0.3
-
+  flutter_animation_progress_bar: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
