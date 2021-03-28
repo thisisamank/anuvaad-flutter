@@ -1,11 +1,13 @@
 import 'package:anuvad/constants/file_state.dart';
 import 'package:anuvad/constants/styles.dart';
+import 'package:bd_progress_bar/bdprogreebar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:anuvad/repository/upload_download.dart';
 import 'package:anuvad/widgets/appbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:toast/toast.dart';
+import 'package:dotted_border/dotted_border.dart';
 
 import 'package:timer_count_down/timer_count_down.dart';
 
@@ -17,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: HomePage(),
       theme: ThemeData(
         fontFamily: 'BrandFont',
@@ -59,8 +62,8 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppWidgets.getAppBar(),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          SizedBox(height: 20),
           Center(
               child: Text(
             fileState == FileState.uploading
@@ -70,18 +73,50 @@ class _HomePageState extends State<HomePage> {
                     : 'Download Your Video',
             style: Theme.of(context).textTheme.headline1,
           )),
-          SizedBox(height: 20),
-          Container(
-            decoration: BoxDecoration(
-              color: BrandColors.lightBlue,
+          DottedBorder(
+            dashPattern: [6, 10],
+            color: BrandColors.primaryBlue,
+            child: Container(
+              decoration: BoxDecoration(
+                color: BrandColors.lightBlue,
+              ),
+              width: 250,
+              height: 250,
+              child: fileState == FileState.uploading
+                  ? uploadFile(_uploadDownloadFile, context)
+                  : downloadFile(_uploadDownloadFile, context),
             ),
-            width: 250,
-            height: 250,
-            child: fileState == FileState.uploading
-                ? uploadFile(_uploadDownloadFile, context)
-                : downloadFile(_uploadDownloadFile, context),
-          )
+          ),
+          getInstructions(),
+          Text('Made with ❤ by Team Garuda 🦅')
         ],
+      ),
+    );
+  }
+
+  Widget getInstructions() {
+    return Container(
+      width: 300,
+      height: 150,
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Instructions:',
+                style: Theme.of(context).textTheme.headline1,
+              ),
+              SizedBox(height: 20),
+              Text(
+                '1. Please Make sure Video is < 25MB\n'
+                '2. The length of video must be < 3 minutes'
+                ' or else it will be trimmed and then processed',
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -89,21 +124,36 @@ class _HomePageState extends State<HomePage> {
   Widget downloadFile(
       UploadDownloadFile _uploadDownloadFile, BuildContext context) {
     return fileState == FileState.processsing
-        ? Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+        ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Processing Time left: '),
-              Countdown(
-                seconds: 150,
-                build: (BuildContext context, double time) =>
-                    Text(time.toInt().toString()),
-                interval: Duration(milliseconds: 100),
-                onFinished: () {
-                  setState(() {
-                    fileState = FileState.downloading;
-                  });
-                },
+              Loader(
+                colors: BrandColors.primaryBlue,
+                backColors: BrandColors.secondaryBlue.withOpacity(0.5),
+              ),
+              // Loader5(
+              //   dotOneColor: BrandColors.primaryBlue,
+              //   dotTwoColor: BrandColors.secondaryBlue,
+              //   dotThreeColor: BrandColors.secondaryBlue.withOpacity(0.5),
+              // ),
+              SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Processing Time left: '),
+                  Countdown(
+                    seconds: 150,
+                    build: (BuildContext context, double time) =>
+                        Text(time.toInt().toString()),
+                    interval: Duration(milliseconds: 100),
+                    onFinished: () {
+                      setState(() {
+                        fileState = FileState.downloading;
+                      });
+                    },
+                  ),
+                ],
               ),
             ],
           )
@@ -115,7 +165,8 @@ class _HomePageState extends State<HomePage> {
                 width: 130,
                 child: MaterialButton(
                   onPressed: () async {
-                    _showMyDialog('Downloading video...');
+                    _showMyDialog(
+                        'Downloading video...', 'images/download.gif');
                     if (await Permission.storage.request().isGranted) {
                       var response =
                           await _uploadDownloadFile.downloadFile(_fileName);
@@ -152,7 +203,7 @@ class _HomePageState extends State<HomePage> {
               allowedExtensions: ['mp4', 'mkv', '3gp'],
             );
             if (filePickerResult != null) {
-              _showMyDialog('Uploading your video...');
+              _showMyDialog('Uploading your video...', 'images/upload.gif');
               _fileName = filePickerResult.files.single.name;
               var file = filePickerResult.files.single.bytes;
               var currentFileState =
@@ -179,13 +230,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _showMyDialog(String title) {
+  Future<void> _showMyDialog(String title, String gifPath) {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Text(title),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(gifPath, width: 100),
+              SizedBox(height: 10),
+              Text(title),
+            ],
+          ),
         );
       },
     );

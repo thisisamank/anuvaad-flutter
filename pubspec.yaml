@@ -34,6 +34,9 @@ dependencies:
   timer_count_down: ^2.0.0
   permission_handler: ^6.1.1
   toast: ^0.1.5
+  dotted_border: ^1.0.7
+  bd_progress_bar: ^0.0.9
+  url_launcher: ^6.0.3
 
 dev_dependencies:
   flutter_test:
