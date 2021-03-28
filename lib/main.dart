@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Processing left: ',
+                'Processing',
                 style: TextStyle(
                   color: BrandColors.secondaryText,
                   fontWeight: FontWeight.bold,
@@ -156,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                       seconds: 100,
                       build: (BuildContext context, double time) =>
                           FAProgressBar(
-                        currentValue: time.toInt(),
+                        currentValue: 100 - time.toInt(),
                         maxValue: 100,
                         displayText: '%',
                         backgroundColor: BrandColors.primaryBlue,
