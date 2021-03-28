@@ -15,7 +15,6 @@ With aim to make Quality Education accessible to all rooks and corner of India, 
  ┃ ┗ 📜appbar.dart - for appbar widget used all across the app
  ┣ 📜generated_plugin_registrant.dart
  ┣ 📜main.dart - contains code for majority of UI
- ┗ 📜mobile_web_export.dar
 ```
 
 ## Contributors
