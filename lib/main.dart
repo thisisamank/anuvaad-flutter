@@ -108,11 +108,12 @@ class _HomePageState extends State<HomePage> {
                 'Instructions:',
                 style: Theme.of(context).textTheme.headline1,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Text(
                 '1. Please Make sure Video is < 25MB\n'
                 '2. The length of video must be < 3 minutes'
                 ' or else it will be trimmed and then processed',
+                style: TextStyle(letterSpacing: 0.3),
               )
             ],
           ),
@@ -141,11 +142,22 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Processing Time left: '),
+                  Text(
+                    'Processing Time left: ',
+                    style: TextStyle(
+                      color: BrandColors.secondaryText,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   Countdown(
                     seconds: 150,
-                    build: (BuildContext context, double time) =>
-                        Text(time.toInt().toString()),
+                    //TODO: Use progress bar instead of Text
+                    build: (BuildContext context, double time) => Text(
+                      time.toInt().toString(),
+                      style: TextStyle(
+                          color: BrandColors.secondaryText,
+                          fontWeight: FontWeight.bold),
+                    ),
                     interval: Duration(milliseconds: 100),
                     onFinished: () {
                       setState(() {
@@ -157,35 +169,57 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           )
-        : Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(35),
-              child: Container(
-                height: 35,
-                width: 130,
-                child: MaterialButton(
-                  onPressed: () async {
-                    _showMyDialog(
-                        'Downloading video...', 'images/download.gif');
-                    if (await Permission.storage.request().isGranted) {
-                      var response =
-                          await _uploadDownloadFile.downloadFile(_fileName);
-                      Navigator.of(context).pop();
-                      var message = response == FileState.downloaded
-                          ? 'Your video has been Translated 😎'
-                          : ' Oops! something went wrong 😐';
-                      Toast.show(message, context,
-                          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-                    }
-                  },
-                  child: Text(
-                    'Download',
-                    style: TextStyle(color: Colors.white),
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(35),
+                child: Container(
+                  height: 35,
+                  width: 193,
+                  child: MaterialButton(
+                    onPressed: () async {
+                      _showMyDialog(
+                          'Downloading video...', 'images/download.gif');
+                      if (await Permission.storage.request().isGranted) {
+                        var response =
+                            await _uploadDownloadFile.downloadFile(_fileName);
+                        Navigator.of(context).pop();
+                        var message = response == FileState.downloaded
+                            ? 'Your video has been Translated 😎'
+                            : ' Oops! something went wrong 😐';
+                        Toast.show(message, context,
+                            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+                      }
+                    },
+                    child: Text(
+                      'Download',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
+                  color: BrandColors.primaryBlue,
                 ),
-                color: BrandColors.secondaryBlue,
               ),
-            ),
+              SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(35),
+                child: Container(
+                  height: 35,
+                  child: MaterialButton(
+                    onPressed: () async {
+                      setState(() {
+                        fileState = FileState.uploading;
+                      });
+                    },
+                    child: Text(
+                      'Convert Another video',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  color: BrandColors.secondaryBlue,
+                ),
+              ),
+            ],
           );
   }
 
