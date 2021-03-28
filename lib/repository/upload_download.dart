@@ -1,4 +1,6 @@
-// import 'dart:html' as web;
+import 'package:flutter/foundation.dart';
+
+//import '' if (dart.library.html) 'dart:html' as web;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:anuvad/constants/file_state.dart';
@@ -33,16 +35,16 @@ class UploadDownloadFile {
               return status < 500;
             }),
       );
-      // if (kIsWeb) {
-      //   print("Executing Web");
-      //   web.AnchorElement()
-      //     ..href = "${Uri.dataFromBytes(response.data, mimeType: 'video/mp4')}"
-      //     ..download = "Translated-$fileNameWithoutExtension.mp4"
-      //     ..style.display = 'none'
-      //     ..click();
-      //   print("Download Successful !");
-      //   return FileState.downloaded;
-      // }
+      if (kIsWeb) {
+        // print("Executing Web");
+        // web.AnchorElement()
+        //   ..href = "${Uri.dataFromBytes(response.data, mimeType: 'video/mp4')}"
+        //   ..download = "Translated-$fileNameWithoutExtension.mp4"
+        //   ..style.display = 'none'
+        //   ..click();
+        // print("Download Successful !");
+        // return FileState.downloaded;
+      }
       print(response.headers);
       Directory appDocDir = await DownloadsPathProvider.downloadsDirectory;
       print(appDocDir.path);
