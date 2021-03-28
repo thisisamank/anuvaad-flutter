@@ -75,6 +75,11 @@ flutter:
           weight: 500
         - asset: fonts/Montserrat-Regular.ttf
           weight: 700
+
+    - family: Samkarn
+      fonts:
+        - asset: fonts/Samkaran.TTF
+
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
