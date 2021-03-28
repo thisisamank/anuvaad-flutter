@@ -1,6 +1,5 @@
 import 'package:anuvad/constants/file_state.dart';
 import 'package:anuvad/constants/styles.dart';
-import 'package:bd_progress_bar/bdprogreebar.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:anuvad/repository/upload_download.dart';
@@ -130,7 +129,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Processing left: ',
+                'Processing Done : ',
                 style: TextStyle(
                   color: BrandColors.secondaryText,
                   fontWeight: FontWeight.bold,
@@ -156,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                       seconds: 100,
                       build: (BuildContext context, double time) =>
                           FAProgressBar(
-                        currentValue: time.toInt(),
+                        currentValue: 100 - time.toInt(),
                         maxValue: 100,
                         displayText: '%',
                         backgroundColor: BrandColors.primaryBlue,

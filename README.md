@@ -17,3 +17,11 @@ With aim to make Quality Education accessible to all rooks and corner of India, 
  ┣ 📜main.dart - contains code for majority of UI
  ┗ 📜mobile_web_export.dar
 ```
+
+## Contributors
+
+Gauransh Kumar : [GitHub](https://github.com/gauranshkumar)
+
+Aman Kumar : [GitHub](https://github.com/thisisamank)
+
+Satyam Mishra : [GitHub](https://github.com/satyam86400)
